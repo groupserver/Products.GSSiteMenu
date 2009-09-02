@@ -26,7 +26,7 @@ class SimpleMenuItem(object):
         self.description = None
         self.filter_string = None
         
-    def avaliable(self):
+    def available(self):
         retval = True
         assert type(retval) == bool
         return retval
@@ -58,13 +58,16 @@ class SimpleBrowserMenuItem(object):
         normalized_action = self.action
         if self.action.startswith('@@'):
             normalized_action = self.action[2:]
+        normalized_action = normalized_action.strip('/')
         if path.endswith('@@index.html'):
             path = path[:-12]
-        retval = False
-        if normalized_action == '/':
-            retval = False # We never match the root.
-        elif path.startswith(normalized_action):
-            retval = True
+        path = path.strip('/')
+        
+        print 'Action %s' % normalized_action
+        print '  path %s' % path
+        retval = (((normalized_action == '') and (path == ''))
+                  or \
+                  ((normalized_action != '') and path.startswith(normalized_action)))
         assert type(retval) == bool
         return retval
 
