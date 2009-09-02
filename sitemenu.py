@@ -53,21 +53,21 @@ class SimpleBrowserMenuItem(object):
     def selected(self):
         """See zope.app.publisher.interfaces.browser.IBrowserMenuItem"""
         # --=mpj17=-- Not perfect, but it will work for now.
-        rurl = self.request.getURL()
-        scheme, netloc, path, query, fragment = urlparse.urlsplit(rurl)
         normalized_action = self.action
         if self.action.startswith('@@'):
             normalized_action = self.action[2:]
         normalized_action = normalized_action.strip('/')
+
+        rurl = self.request.getURL()
+        scheme, netloc, path, query, frag = urlparse.urlsplit(rurl)
         if path.endswith('@@index.html'):
             path = path[:-12]
         path = path.strip('/')
         
-        print 'Action %s' % normalized_action
-        print '  path %s' % path
         retval = (((normalized_action == '') and (path == ''))
                   or \
-                  ((normalized_action != '') and path.startswith(normalized_action)))
+                  ((normalized_action != '') and \
+                    path.startswith(normalized_action)))
         assert type(retval) == bool
         return retval
 
@@ -113,10 +113,10 @@ class SiteMenu(object):
         retval = [SimpleMenuItem('/','Home')] \
           + folderItems  + [SimpleMenuItem('/help','Help')]
         b = time.time()
-        m = 'Generated site menu for %s (%s) on %s (%s) in %.2fs' %\
+        m = 'Generated site menu for %s (%s) on %s (%s) in %.2fms' %\
           (self.userInfo.name, self.userInfo.id, 
            self.siteInfo.name, self.siteInfo.id,
-           b-a)
+           (b-a)*1000.0)
         log.info(m)
         assert type(retval) == list
         assert len(retval) >= 2
