@@ -105,18 +105,21 @@ class SiteMenu(object):
         a = time.time()
         retval = []
         site = self.siteInfo.siteObj
-        folderTypes = ('Folder', 'Folder (ordered)')
-        folderItems = [FolderMenuItem(f) 
-                        for f in site.objectValues(folderTypes)
-                        if (f.getProperty('section_id') 
-                          and self.can_see_folder(f))]
+        if site:
+            folderTypes = ('Folder', 'Folder (Ordered)')
+            folderItems = [FolderMenuItem(f) 
+                            for f in site.objectValues(folderTypes)
+                            if (f.getProperty('section_id') 
+                              and self.can_see_folder(f))]
+        else:
+            folderItems = []
         retval = [SimpleMenuItem('/','Home')] \
           + folderItems  + [SimpleMenuItem('/help','Help')]
         b = time.time()
         m = 'Generated site menu for %s (%s) on %s (%s) in %.2fms' %\
           (self.userInfo.name, self.userInfo.id, 
-           self.siteInfo.name, self.siteInfo.id,
-           (b-a)*1000.0)
+            self.siteInfo.name, self.siteInfo.id,
+            (b-a)*1000.0)
         log.info(m)
         assert type(retval) == list
         assert len(retval) >= 2
