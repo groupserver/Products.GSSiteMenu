@@ -4,6 +4,7 @@ from urllib2 import urlparse
 from zope.component import createObject
 from zope.interface import implements
 from zope.app.publisher.interfaces.browser import IBrowserMenuItem, IBrowserMenu
+from AccessControl.PermissionRole import rolesForPermissionOn
 from Products.XWFCore.cache import LRUCache
 
 userSiteMenuItems = LRUCache(cache_name='User Site Site-Menu Cache')
@@ -92,6 +93,7 @@ class SiteMenu(object):
         
     def getMenuItems(self):
         key = '%s.%s' % (self.siteInfo.id, self.userInfo.id)
+        print key
         items = userSiteMenuItems.get(key)
         if items == None:
             items = self.real_get_menu_items()
@@ -129,7 +131,12 @@ class SiteMenu(object):
         # --=mpj17=-- The logic is here, rather than in the "allow"
         #   method of the menu item, because we only want to cache
         #   simple things, and users are not simple.
-        retval = bool(self.userInfo.user.allowed(folder))
+        roles = rolesForPermissionOn('View', folder)
+        print folder
+        print roles
+        print self.userInfo.name
+        retval = bool(self.userInfo.user.allowed(folder, roles))
+        print retval
         assert type(retval) == bool
         return retval
 
