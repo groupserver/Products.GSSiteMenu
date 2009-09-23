@@ -7,6 +7,8 @@ from zope.app.publisher.interfaces.browser import IBrowserMenuItem, IBrowserMenu
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Products.XWFCore.cache import LRUCache
 
+from AccessControl import getSecurityManager
+
 userSiteMenuItems = LRUCache(cache_name='User Site Site-Menu Cache')
 userSiteMenuItems.set_max_objects(5120)
 # The cache will be wrong if:
@@ -131,12 +133,14 @@ class SiteMenu(object):
         # --=mpj17=-- The logic is here, rather than in the "allow"
         #   method of the menu item, because we only want to cache
         #   simple things, and users are not simple.
-        roles = rolesForPermissionOn('View', folder)
-        print folder
-        print roles
-        print self.userInfo.name
-        retval = bool(self.userInfo.user.allowed(folder, roles))
-        print retval
+        
+        # For some brain-dead reason, that I hope makes sense to
+        # someone, calling "acl_users.getUser" will lose the context
+        # of the user, so the permission check will fail. So, I have
+        # to get the user from the local security context each time.
+        user = getSecurityManager().getUser()
+
+        retval = bool(user.has_permission('View', folder))
         assert type(retval) == bool
         return retval
 
