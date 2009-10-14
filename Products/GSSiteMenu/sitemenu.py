@@ -120,11 +120,6 @@ class SiteMenu(object):
         retval = [SimpleMenuItem('/','Home')] \
           + folderItems  + [SimpleMenuItem('/help','Help')]
         b = time.time()
-        m = 'Generated site menu for %s (%s) on %s (%s) in %.2fms' %\
-          (self.userInfo.name, self.userInfo.id, 
-            self.siteInfo.name, self.siteInfo.id,
-            (b-a)*1000.0)
-        log.info(m)
         assert type(retval) == list
         assert len(retval) >= 2
         return retval
