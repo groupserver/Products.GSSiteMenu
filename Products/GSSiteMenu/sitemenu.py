@@ -95,7 +95,6 @@ class SiteMenu(object):
         
     def getMenuItems(self):
         key = '%s.%s' % (self.siteInfo.id, self.userInfo.id)
-        print key
         items = userSiteMenuItems.get(key)
         if items == None:
             items = self.real_get_menu_items()
